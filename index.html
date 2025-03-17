@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      ul,
+      li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .btnAllDell {
+        width: 100%;
+      }
+
+      .division_line {
+        margin-top: 1px;
+        margin-bottom: 20px;
+        border: 1px solid black;
+      }
+
+      .icon_img {
+        width: 15px;
+        height: 15px;
+      }
+
+      .isMarked {
+        color: gray;
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-4">
+          <h1 class="text-center">Todo Lists</h1>
+          <div class="division_line"></div>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control inputItem"
+              placeholder="할일을 입력하세요"
+            />
+            <span class="input-group-text inputBtn" id="basic-addon2"
+              ><img src="./image/Check.svg" alt=""
+            /></span>
+          </div>
+          <ul class="lists">
+            <!-- <li class="d-flex justify-content-between align-items-center">
+              <div>
+                <input type="checkbox" class="isChecked" />
+                <span class="todoItem p-2">할일이 무엇이더라?</span>
+              </div>
+              <img src="./image/Trash.png" alt="" class="icon_img" />
+            </li> -->
+          </ul>
+          <div class="btn delBtn btn-primary mt-3">전부 삭제</div>
+        </div>
+
+        <div class="col-8"></div>
+      </div>
+    </div>
+
+    <script>
+      let listData = [];
+
+      const inpElem = document.querySelector(".inputItem");
+      const listsElem = document.querySelector(".lists");
+      const inpBtnElem = document.querySelector(".inputBtn");
+      const delBtnElem = document.querySelector(".delBtn");
+
+      delBtnElem.addEventListener("click", clearAll);
+      inpBtnElem.addEventListener("click", inputData);
+      inpElem.addEventListener("keydown", function (e) {
+        if (e.key == "Enter") {
+          inputData();
+        }
+      });
+
+      function viewData() {
+        let viewList = "";
+        listData.forEach(function (item, index) {
+          viewList += `<li class="d-flex justify-content-between align-items-center">
+                                       <div>
+                                          <input type="checkbox" ${
+                                            item.completed ? "checked" : ""
+                                          }
+                                            onclick="toggleComplete(${index})" />
+                                           <span class="${
+                                             item.completed ? "isMarked" : " "
+                                           }
+                                           p-2">${item.text}</span>
+                                       </div>
+                                       <img src="./image/Trash.png" class="icon_img" onclick="del(${index})"/>
+                                  </li>`;
+        });
+
+        listsElem.innerHTML = viewList;
+      }
+
+      function clearAll() {
+        listData = [];
+        listsElem.innerHTML = "";
+        saveData();
+        viewData();
+      }
+
+      function toggleComplete(index) {
+        listData[index].completed = !listData[index].completed;
+        saveData();
+        viewData();
+      }
+
+      function saveData() {
+        localStorage.setItem("listData", JSON.stringify(listData));
+      }
+
+      function loadData() {
+        const storageData = localStorage.getItem("listData");
+        listData = storageData ? JSON.parse(storageData) : [];
+      }
+
+      function inputData() {
+        let value = inpElem.value;
+        if (value) {
+          listData.push({ text: value, completed: false });
+          saveData();
+          inpElem.value = "";
+          viewData();
+        } else {
+          alert("오늘의 할일을 입력해 주세요");
+        }
+      }
+
+      function del(index) {
+        listData.splice(index, 1);
+        saveData();
+        viewData();
+      }
+
+      loadData();
+      viewData();
+    </script>
+  </body>
+</html>
